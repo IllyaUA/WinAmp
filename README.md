@@ -12,6 +12,10 @@ The three windows (main player, equalizer, playlist) are drawn in code at the or
 - Plays in the background with a notification, lock screen controls and headset buttons. Pauses when headphones are unplugged and when another app takes audio focus.
 - "Open with" from a file manager adds the file and plays it.
 
+## Download
+
+Get the latest APK from the [Releases page](https://github.com/IllyaUA/WinAmp/releases/latest) (`WinAmp-Classic.apk`). It is signed with a debug key, so Android asks you to allow installs from your browser or file manager the first time.
+
 ## Build
 
 Needs JDK 17 and the Android SDK (platform 35).
