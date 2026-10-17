@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "WinAmp"
 include(":app")
+include(":desktop")
