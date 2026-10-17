@@ -49,7 +49,7 @@ class DirectoryTest {
     @Test fun scanFindsFilesInSubfoldersWithOwnFilesFirst() {
         file("album/02.mp3"); file("album/01.mp3"); file("album/CD2/01.mp3"); file("album/CD1/01.mp3")
         file("album/cover.jpg")
-        val found = DirectoryLister.scanAudio(File(tmp.root, "album")).map { it.relativeTo(tmp.root).path }
+        val found = DirectoryLister.scanAudio(File(tmp.root, "album")).map { it.relativeTo(tmp.root).invariantSeparatorsPath }
         assertEquals(
             listOf("album/01.mp3", "album/02.mp3", "album/CD1/01.mp3", "album/CD2/01.mp3"),
             found,
