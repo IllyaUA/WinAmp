@@ -6,15 +6,12 @@ import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.documentfile.provider.DocumentFile
 import com.illyaua.winamp.core.Track
 import com.illyaua.winamp.core.TrackKind
+import java.io.File
 
-/** Turns picked files and folders into [Track]s and fills in tags, duration and format details. */
+/** Turns picked files into [Track]s and fills in tags, duration and format details. */
 object TrackLibrary {
-    private const val MAX_SCAN_FILES = 5000
-    private const val MAX_SCAN_DEPTH = 8
-
     fun displayName(context: Context, uri: Uri): String {
         if (uri.scheme == "content") {
             try {
@@ -36,30 +33,7 @@ object TrackLibrary {
         kind = TrackKind.fromName(fileName),
     )
 
-    /** Walks a folder picked with the system tree picker and returns every playable file in name order. */
-    fun scanFolder(context: Context, treeUri: Uri): List<Track> {
-        val root = DocumentFile.fromTreeUri(context, treeUri) ?: return emptyList()
-        val out = ArrayList<Track>()
-        walk(root, out, 0)
-        return out
-    }
-
-    private fun walk(dir: DocumentFile, out: MutableList<Track>, depth: Int) {
-        if (depth > MAX_SCAN_DEPTH || out.size >= MAX_SCAN_FILES) return
-        val children = try {
-            dir.listFiles().sortedBy { it.name?.lowercase().orEmpty() }
-        } catch (_: Exception) {
-            return
-        }
-        for (file in children) {
-            if (out.size >= MAX_SCAN_FILES) return
-            val name = file.name ?: continue
-            when {
-                file.isDirectory -> walk(file, out, depth + 1)
-                TrackKind.isSupported(name) -> out += quickTrack(file.uri, name)
-            }
-        }
-    }
+    fun quickTrack(file: File): Track = quickTrack(Uri.fromFile(file), file.name)
 
     /** Reads tags and stream info. Slow: call off the main thread. Missing data keeps the values from [base]. */
     fun readMetadata(context: Context, base: Track): Track {

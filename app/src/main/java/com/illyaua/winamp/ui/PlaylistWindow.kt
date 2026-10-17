@@ -35,7 +35,7 @@ fun PlaylistWindow(
     engine: PlayerEngine,
     height: Float,
     onAddFiles: () -> Unit,
-    onAddFolder: () -> Unit,
+    onSystemPicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by engine.state.collectAsStateWithLifecycle()
@@ -63,7 +63,7 @@ fun PlaylistWindow(
                 .drawBehind { panel(0f, 0f, 263f, listH, raised = false, fill = Skin.ListBackground) }
         ) {
             if (state.tracks.isEmpty()) {
-                LcdText("Playlist is empty. Use ADD or DIR.", Skin.LcdLabel, Modifier.at(4, 4, 250, 9), 7f)
+                LcdText("Playlist is empty. Press ADD to browse.", Skin.LcdLabel, Modifier.at(4, 4, 250, 9), 7f)
             }
             LazyColumn(
                 state = listState,
@@ -125,7 +125,7 @@ fun PlaylistWindow(
 
         val barY = height - BAR_H - 4f
         BevelButton(Modifier.at(6, barY, 30, 14), onAddFiles, label = "ADD")
-        BevelButton(Modifier.at(38, barY, 30, 14), onAddFolder, label = "DIR")
+        BevelButton(Modifier.at(38, barY, 30, 14), onSystemPicker, label = "SYS")
         BevelButton(
             Modifier.at(70, barY, 30, 14),
             {

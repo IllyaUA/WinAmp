@@ -7,10 +7,15 @@ The three windows (main player, equalizer, playlist) are drawn in code at the or
 ## Features
 
 - Main window: seven-segment clock (tap to switch between elapsed and remaining), scrolling title, kbps/kHz/mono/stereo indicators, 19-bar spectrum analyzer with peak markers, seek bar, volume, balance, previous/play/pause/stop/next/eject, shuffle, repeat.
-- Playlist: add files, add a whole folder (scans subfolders), tap to play, long-press to select, REM to remove selected, CLR to clear. Saved between launches.
+- Playlist: tap to play, long-press to select, REM to remove selected, CLR to clear. Saved between launches.
+- File browser (ADD or the eject button): navigate folders, tick any number of files and folders, press ADD. A ticked folder adds every MP3/WAV/MIDI inside it, sub-folders included, in natural order (2 before 10). SYS opens Android's own picker as a fallback.
 - Equalizer: uses the device's hardware equalizer, so you get the number of bands your phone offers (usually 5), with ON, FLAT and PRESETS.
 - Plays in the background with a notification, lock screen controls and headset buttons. Pauses when headphones are unplugged and when another app takes audio focus.
 - "Open with" from a file manager adds the file and plays it.
+
+## Download
+
+Get the latest APK from the [Releases page](https://github.com/IllyaUA/WinAmp/releases/latest) (`WinAmp-Classic.apk`). It is signed with a debug key, so Android asks you to allow installs from your browser or file manager the first time.
 
 ## Build
 
@@ -29,6 +34,7 @@ Pushes to GitHub build the APK automatically; download it from the workflow run'
 |---|---|
 | `RECORD_AUDIO` | Android only allows the spectrum analyzer (Visualizer API) for apps that hold it. The app never records. Deny it and everything works except the analyzer bars. |
 | `POST_NOTIFICATIONS` | Playback notification on Android 13+. |
+| All files access (`MANAGE_EXTERNAL_STORAGE`) | Lets the file browser list folders by path. Android asks you to flip a switch in settings. Without it the browser stays empty and only SYS (Android's picker) works. |
 | `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `WAKE_LOCK` | Keep playing with the screen off. |
 
 ## Layout

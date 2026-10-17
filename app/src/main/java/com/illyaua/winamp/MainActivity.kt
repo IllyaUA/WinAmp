@@ -1,11 +1,13 @@
 package com.illyaua.winamp
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,13 +25,8 @@ class MainActivity : ComponentActivity() {
             engine.addUris(uris)
         }
 
-    private val pickFolder =
-        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-            if (uri != null) {
-                keepAccess(uri)
-                engine.addFolder(uri)
-            }
-        }
+    private val askStorage =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     private val askPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
@@ -44,8 +41,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             WinampApp(
                 engine = engine,
-                onAddFiles = { pickFiles.launch(AUDIO_TYPES) },
-                onAddFolder = { pickFolder.launch(null) },
+                onSystemPicker = { pickFiles.launch(AUDIO_TYPES) },
+                onRequestStorage = ::requestStorageAccess,
             )
         }
     }
@@ -74,6 +71,20 @@ class MainActivity : ComponentActivity() {
 
     private fun granted(permission: String) =
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+    /** Opens the "All files access" switch on Android 11+, or asks for read access on older versions. */
+    private fun requestStorageAccess() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            val appPage = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:$packageName"))
+            try {
+                startActivity(appPage)
+            } catch (_: ActivityNotFoundException) {
+                startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
+            }
+        } else {
+            askStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
 
     /** Lets the playlist reopen this file after the app restarts. */
     private fun keepAccess(uri: Uri) {

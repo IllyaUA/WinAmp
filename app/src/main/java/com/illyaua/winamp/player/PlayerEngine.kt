@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import com.illyaua.winamp.core.DirectoryLister
+import com.illyaua.winamp.core.NaturalOrder
 import com.illyaua.winamp.core.PlaybackOrder
 import com.illyaua.winamp.core.SpectrumFrame
 import com.illyaua.winamp.core.SpectrumMath
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -113,13 +116,20 @@ class PlayerEngine private constructor(private val app: Context) {
         }
     }
 
-    fun addFolder(treeUri: Uri) {
+    /** Adds files and, recursively, every playable file inside the given folders. */
+    fun addFiles(paths: Collection<File>, playFirst: Boolean = false) {
+        if (paths.isEmpty()) return
         scope.launch {
-            val found = withContext(Dispatchers.IO) { TrackLibrary.scanFolder(app, treeUri) }
-            if (found.isEmpty()) {
-                _state.update { it.copy(error = "No playable files in that folder") }
+            val tracks = withContext(Dispatchers.IO) {
+                paths.sortedWith { a, b -> NaturalOrder.compare(a.path, b.path) }
+                    .flatMap { if (it.isDirectory) DirectoryLister.scanAudio(it) else listOf(it) }
+                    .map { TrackLibrary.quickTrack(it) }
+            }
+            if (tracks.isEmpty()) {
+                _state.update { it.copy(error = "No audio files found in the selection") }
             } else {
-                appendTracks(found, playFirst = false)
+                _state.update { it.copy(error = null) }
+                appendTracks(tracks, playFirst)
             }
         }
     }

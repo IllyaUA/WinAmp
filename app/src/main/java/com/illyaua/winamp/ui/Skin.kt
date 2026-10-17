@@ -9,6 +9,7 @@ object Skin {
     const val MAIN_H = 116f
     const val EQ_H = 116f
     const val PLAYLIST_MIN_H = 90f
+    const val BROWSER_MIN_H = 170f
 
     val BodyTop = Color(0xFF4F4F68)
     val BodyBottom = Color(0xFF2E2E40)
