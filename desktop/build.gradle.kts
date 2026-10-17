@@ -20,10 +20,6 @@ tasks.withType<JavaCompile> {
     options.release.set(17)
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     // Java Sound service providers: MP3, Ogg Vorbis and FLAC. WAV and MIDI are built into the JDK.
     implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
